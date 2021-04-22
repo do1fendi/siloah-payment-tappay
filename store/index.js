@@ -3,7 +3,11 @@ export const state = () => ({
   password: '4qe3aI1!XSZA)Q^mR*wIChEE',
   token: '',
   orderNumber: '',
-  apiData:{}
+  apiData: {},
+  recordId: '',
+  // status 0 means success
+  paymentStatus: null,
+  paymentResult: {},
 })
 
 export const mutations = {
@@ -16,6 +20,15 @@ export const mutations = {
   SET_APIDATA(state, payload) {
     state.apiData = payload
   },
+  SET_PAYMENTSTATUS(state, payload) {
+    state.paymentStatus = payload
+  },
+  SET_PAYMENTRESULT(state, payload) {
+    state.paymentResult = payload
+  },
+  SET_RECORDID(state, payload) {
+    state.recordId = payload
+  },
 }
 
 export const getters = {
@@ -24,4 +37,7 @@ export const getters = {
   GET_TOKEN: (state) => state.token,
   GET_ORDERNUMBER: (state) => state.orderNumber,
   GET_APIDATA: (state) => state.apiData,
+  GET_PAYMENTSTATUS: (state) => state.paymentStatus,
+  GET_PAYMENTRESULT: (state) => state.paymentResult,
+  GET_RECORDID: (state) => state.recordId,
 }

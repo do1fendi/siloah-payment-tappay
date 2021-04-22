@@ -9,9 +9,9 @@
 import { mapGetters, mapMutations } from 'vuex'
 
 export default {
-  data(){
-    return{
-      dataPackage:{}
+  data() {
+    return {
+      dataPackage: {},
     }
   },
   computed: {
@@ -22,17 +22,18 @@ export default {
       'GET_ORDERNUMBER',
       'GET_APIDATA',
     ]),
-    ...mapMutations(['SET_TOKEN', 'SET_ORDERNUMBER', 'SET_APIDATA']),
+    ...mapMutations(['SET_TOKEN', 'SET_ORDERNUMBER', 'SET_APIDATA', 'SET_RECORDID']),
   },
 
   mounted() {
-    this.$nextTick(() => {      
+    this.$nextTick(() => {
       this.getToken()
+      this.$store.commit('SET_ORDERNUMBER', this.$route.query.orderNumber)
     })
   },
 
   methods: {
-    getToken() {      
+    getToken() {
       const config = {
         method: 'POST',
         url:
@@ -53,7 +54,7 @@ export default {
       }
       apiGetToken()
     },
-    getOrder() {      
+    getOrder() {
       const query = JSON.stringify({
         query: [
           {
@@ -76,8 +77,9 @@ export default {
         const data = await res.data.response.data[0].fieldData
         this.dataPackage = data
         // this.$store.commit('SET_APIDATA', JSON.stringify(data).toString().replace(/\\/g,''))
-        this.$store.commit('SET_APIDATA', data.json_byNumber.replace(/\\/g,''))
-         console.log(data)
+        this.$store.commit('SET_APIDATA', data.json_byNumber.replace(/\\/g, ''))
+        console.log(data)
+        this.$store.commit('SET_RECORDID', res.data.response.data[0].recordId)
         this.$refs.paymentChild.setFields()
       }
       apiGetPackage()

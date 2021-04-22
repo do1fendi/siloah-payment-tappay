@@ -67,12 +67,23 @@
       </b-col>
     </b-form>
     <!-- {{ this.GET_APIDATA }} -->
-    {{ this.tappayData }}
+    <!-- {{ this.tappayData }} -->
+
+    <b-alert
+      v-if="!GET_PAYMENTSTATUS == 0"
+      variant="danger"
+      class="paymentResult mt-4"
+      show
+    >
+      <h4>Payment Failed</h4>
+      <h5>{{ GET_PAYMENTRESULT.status }}</h5>
+      <h5>{{ GET_PAYMENTRESULT.msg }}</h5>
+    </b-alert>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   props: ['dataPackage'],
   head() {
@@ -85,7 +96,7 @@ export default {
       tappayData: {
         prime: '',
         amount: 0,
-        merchant_id: 'siloah_CTBC',        
+        merchant_id: 'siloah_CTBC',
         details: 'a',
         cardholder: {
           phone_number: '',
@@ -99,7 +110,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['GET_APIDATA']),
+    ...mapGetters(['GET_APIDATA', 'GET_PAYMENTSTATUS', 'GET_PAYMENTRESULT']),
+    ...mapMutations(['SET_PAYMENTSTATUS', 'SET_PAYMENTRESULT']),
     // getEmail: function () {
     //   return this.GET_FORM.regEmail
     // },
@@ -123,7 +135,7 @@ export default {
       return this.tappayData.cardholder.phone_number.length >= 6
     },
   },
-  mounted() {    
+  mounted() {
     // this.$nextTick(() => {
     //   this.tappayData.details = this.$route.query.orderNumber
     // if(this.GET_APIDATA.mapGettersjson_byNumber != 'undefined')
@@ -288,32 +300,48 @@ export default {
             alert('get prime error ' + result.msg)
             return
           }
-          alert('get prime 成功，prime: ' + result.card.prime)
+          // alert('get prime 成功，prime: ' + result.card.prime)
           // this.tappayData.prime = result.card.prime
 
           if (result.card.prime) {
             // set tappay data
             this.tappayData.prime = result.card.prime
-            
+
             const data = JSON.stringify(this.tappayData)
-            console.log(data)
-            // fetch('http://localhost/tappayPay/index.php', {
-            fetch('https://www.taiwanviptravel.com/payment/tappay/index.php', {
-              method: 'post',
-              body: data,
+
+            runApi().then((response) => {
+              const json = JSON.parse(response)
+              this.$store.commit('SET_PAYMENTSTATUS', parseInt(json.status))
+              this.$store.commit('SET_PAYMENTRESULT', json)
+              if(json.status === 0) {
+                this.$router.push('thank')
+              }
             })
-              .then((res) => res.json())
-              .then(function (data) {
-                const jsonData = data
-                console.log(jsonData)
-                // if (jsonData.status === 0) $nuxt.$router.push('thank')
-              })
-              .catch((error) => {
-                console.error('Error:', error)
-              })
+
+            function runApi() {
+              // console.log(data)
+              // fetch('http://localhost/tappayPay/index.php', {
+              return fetch(
+                'https://www.taiwanviptravel.com/payment/tappay/index.php',
+                {
+                  method: 'post',
+                  body: data,
+                }
+              )
+                .then((res) => res.json())
+                .then(function (data) {
+                  return data
+                })
+                .catch((error) => {
+                  console.error('Error:', error)
+                })
+            }
           }
         })
       }
+    },
+    foo() {
+      alert(1)
     },
 
     setFields() {
@@ -321,10 +349,11 @@ export default {
       this.tappayData.amount = json.totalPrice
       this.tappayData.details = this.$route.query.orderNumber
       this.tappayData.cardholder.email = json.register.email
-      this.tappayData.cardholder.name = json.register.lastname + json.register.firstname
-      this.tappayData.cardholder.phone_number = json.register.phoneCode + json.register.phoneNumber
-      // this.tappayData.details = 
-      
+      this.tappayData.cardholder.name =
+        json.register.lastname + json.register.firstname
+      this.tappayData.cardholder.phone_number =
+        json.register.phoneCode + json.register.phoneNumber
+      // this.tappayData.details =
     },
   },
 }
@@ -336,12 +365,3 @@ export default {
   margin: auto;
 }
 </style>
-
- prime: '',
-        amount: 0,
-        merchant_id: 'siloah_CTBC',
-        details: '',
-        cardholder: {
-          phone_number: '',
-          name: '',
-          email: ''
