@@ -18,7 +18,7 @@ export default {}
 <style>
 .footer {
   background-color: #434852;
-  padding: 20px;  
+  padding: 20px;
   color: azure;
   width: 100%;
 }

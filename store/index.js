@@ -8,6 +8,7 @@ export const state = () => ({
   // status 0 means success
   paymentStatus: null,
   paymentResult: {},
+  busy: true
 })
 
 export const mutations = {
@@ -29,6 +30,9 @@ export const mutations = {
   SET_RECORDID(state, payload) {
     state.recordId = payload
   },
+  SET_BUSY(state, payload) {
+    state.busy = payload
+  },
 }
 
 export const getters = {
@@ -40,4 +44,5 @@ export const getters = {
   GET_PAYMENTSTATUS: (state) => state.paymentStatus,
   GET_PAYMENTRESULT: (state) => state.paymentResult,
   GET_RECORDID: (state) => state.recordId,
+  GET_BUSY: (state) => state.busy,
 }

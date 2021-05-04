@@ -1,85 +1,108 @@
 <template>
-  <div class="tappay">
-    <b-form @submit="onSubmit">
-      <b-col class="pl-0 pr-0">
-        <label for="exampleInputEmail1">Email address</label>
-        <b-form-input
-          type="email"
-          class="form-control"
-          id="exampleInputEmail1"
-          placeholder="Email"
-          v-model="tappayData.cardholder.email"
-          :state="valEmailState"
-          ref="em"
-        />
-      </b-col>
-      <b-col class="mt-3 pl-0 pr-0">
-        <label for="exampleInputName">Card Holder Name</label>
-        <b-form-input
-          type="text"
-          class="form-control"
-          id="exampleInputName"
-          placeholder="Card Holder Name"
-          v-model="tappayData.cardholder.name"
-          :state="valNameState"
-          ref="nm"
-        />
-      </b-col>
-      <b-col class="mt-3 pl-0 pr-0">
-        <label for="contactNumber">Contact Number</label>
-        <b-form-input
-          type="text"
-          class="form-control"
-          id="contactNumber"
-          placeholder="Contact Number"
-          v-model="tappayData.cardholder.phone_number"
-          :state="valPhoneState"
-          ref="ph"
-        />
-      </b-col>
+  <b-overlay
+    :show="GET_BUSY"
+    rounded
+    opacity="0.6"
+    spinner-big
+    spinner-variant="primary"
+    class="d-inline-block w-100"
+  >
+    <div class="tappay">
+      <b-form @submit="onSubmit">
+        <b-col class="pl-0 pr-0">
+          <label for="exampleInputEmail1">Email address</label>
+          <b-form-input
+            type="email"
+            class="form-control"
+            id="exampleInputEmail1"
+            placeholder="Email"
+            v-model="tappayData.cardholder.email"
+            :state="valEmailState"
+            ref="em"
+          />
+        </b-col>
+        <b-col class="mt-3 pl-0 pr-0">
+          <label for="exampleInputName">Card Holder Name</label>
+          <b-form-input
+            type="text"
+            class="form-control"
+            id="exampleInputName"
+            placeholder="Card Holder Name"
+            v-model="tappayData.cardholder.name"
+            :state="valNameState"
+            ref="nm"
+          />
+        </b-col>
+        <b-col class="mt-3 pl-0 pr-0">
+          <label for="contactNumber">Contact Number</label>
+          <b-form-input
+            type="text"
+            class="form-control"
+            id="contactNumber"
+            placeholder="Contact Number"
+            v-model="tappayData.cardholder.phone_number"
+            :state="valPhoneState"
+            ref="ph"
+          />
+        </b-col>
 
-      <b-col class="card-number-group mt-3 pl-0 pr-0">
-        <label for="card-number" class="control-label"
-          ><span id="cardtype"></span>卡號</label
+        <b-col class="card-number-group mt-3 pl-0 pr-0">
+          <label for="card-number" class="control-label"
+            ><span id="cardtype"></span>卡號</label
+          >
+          <div class="form-control card-number"></div>
+        </b-col>
+
+        <b-col class="expiration-date-group mt-3 pl-0 pr-0">
+          <label for="expiration-date" class="control-label">卡片到期日</label>
+          <div
+            class="form-control expiration-date"
+            id="tappay-expiration-date"
+          ></div>
+        </b-col>
+
+        <b-col class="form-group cvc-group mt-3 pl-0 pr-0">
+          <label for="cvc" class="control-label">卡片後三碼</label>
+          <div class="form-control cvc"></div>
+        </b-col>
+        <b-col class="mt-4 p-0">
+          <b-alert show variant="success">
+            <h3>Detail / 訂單資訊</h3>
+            <hr />
+            Order （訂單編號）: {{ tappayData.details }} <br />
+            Adult (成人): {{ adultNum }}<br />
+            Kid (小孩): {{ kidNum }}<br /><br />
+            <h5>
+              Total Price (總額):
+              {{
+                tappayData.amount
+                  .toString()
+                  .replace(/\d{1,3}(?=(\d{3})+(?!\d))/g, '$&,')
+              }}
+              TWD
+            </h5>
+          </b-alert>
+        </b-col>
+
+        <b-alert
+          v-if="!GET_PAYMENTSTATUS == 0"
+          variant="danger"
+          class="paymentResult mt-4"
+          show
         >
-        <div class="form-control card-number"></div>
-      </b-col>
+          <h4>Payment Failed</h4>
+          <h5>{{ GET_PAYMENTRESULT.status }}</h5>
+          <h5>{{ GET_PAYMENTRESULT.msg }}</h5>
+        </b-alert>
 
-      <b-col class="expiration-date-group mt-3 pl-0 pr-0">
-        <label for="expiration-date" class="control-label">卡片到期日</label>
-        <div
-          class="form-control expiration-date"
-          id="tappay-expiration-date"
-        ></div>
-      </b-col>
-
-      <b-col class="form-group cvc-group mt-3 pl-0 pr-0">
-        <label for="cvc" class="control-label">卡片後三碼</label>
-        <div class="form-control cvc"></div>
-      </b-col>
-      <div class="amt mt-4">
-        <h4>Total Amount: {{ tappayData.amount }} NTD</h4>
-      </div>
-      <b-col class="text-center pr-0 mt-4">
-        <b-button type="submit" variant="warning" class="pl-5 pr-5"
-          >Pay</b-button
-        >
-      </b-col>
-    </b-form>
-    <!-- {{ this.GET_APIDATA }} -->
-    <!-- {{ this.tappayData }} -->
-
-    <b-alert
-      v-if="!GET_PAYMENTSTATUS == 0"
-      variant="danger"
-      class="paymentResult mt-4"
-      show
-    >
-      <h4>Payment Failed</h4>
-      <h5>{{ GET_PAYMENTRESULT.status }}</h5>
-      <h5>{{ GET_PAYMENTRESULT.msg }}</h5>
-    </b-alert>
-  </div>
+        <b-col class="text-center pr-0 mt-4">
+          <b-button type="submit" variant="warning" class="pl-5 pr-5"
+            >Pay</b-button
+          >
+        </b-col>
+      </b-form>
+    </div>
+  </b-overlay>
 </template>
 
 <script>
@@ -93,11 +116,14 @@ export default {
   },
   data() {
     return {
+      busy: false,
+      adultNum: 0,
+      kidNum: 0,
       tappayData: {
         prime: '',
         amount: 0,
         merchant_id: 'siloah_CTBC',
-        details: 'a',
+        details: '',
         cardholder: {
           phone_number: '',
           name: '',
@@ -110,7 +136,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['GET_APIDATA', 'GET_PAYMENTSTATUS', 'GET_PAYMENTRESULT']),
+    ...mapGetters([
+      'GET_APIDATA',
+      'GET_PAYMENTSTATUS',
+      'GET_PAYMENTRESULT',
+      'GET_TOKEN',
+      'GET_BUSY',
+    ]),
     ...mapMutations(['SET_PAYMENTSTATUS', 'SET_PAYMENTRESULT']),
     // getEmail: function () {
     //   return this.GET_FORM.regEmail
@@ -313,14 +345,17 @@ export default {
               const json = JSON.parse(response)
               this.$store.commit('SET_PAYMENTSTATUS', parseInt(json.status))
               this.$store.commit('SET_PAYMENTRESULT', json)
-              if(json.status === 0) {
-                this.$router.push('thank')
+              
+              const x = async () => {
+                const res = await this.updateOrder(this.GET_PAYMENTRESULT.msg)
+                if(typeof res != 'undefined' && json.status === 0){
+                   this.$router.push('thank')
+                }
               }
+              x()
             })
 
             function runApi() {
-              // console.log(data)
-              // fetch('http://localhost/tappayPay/index.php', {
               return fetch(
                 'https://www.taiwanviptravel.com/payment/tappay/index.php',
                 {
@@ -340,8 +375,33 @@ export default {
         })
       }
     },
-    foo() {
-      alert(1)
+    async updateOrder(msg) {
+      const query = JSON.stringify({
+        query: [
+          {
+            RS_salesNumber: this.$route.query.orderNumber,
+          },
+        ],
+        script: 'update_payment',
+        'script.param': `${this.$route.query.orderNumber};${msg}`,
+      })
+      const config = {
+        method: 'POST',
+        url:
+          'https://ofc.taiwanviptravel.com/fmi/data/v1/databases/TVT/layouts/DATA_API_SALESORDER/_find',
+        headers: {
+          Authorization: `Bearer ${this.GET_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        data: query,
+      }
+      const runApi = async () => {
+        const res = await this.$axios(config)
+        const data = await res.data.response.data[0].fieldData
+        return data
+      }
+      
+      return runApi()
     },
 
     setFields() {
@@ -353,7 +413,8 @@ export default {
         json.register.lastname + json.register.firstname
       this.tappayData.cardholder.phone_number =
         json.register.phoneCode + json.register.phoneNumber
-      // this.tappayData.details =
+      this.adultNum = json.adultNum
+      this.kidNum = json.kidNum
     },
   },
 }

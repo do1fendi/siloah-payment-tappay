@@ -78,9 +78,10 @@ export default {
         this.dataPackage = data
         // this.$store.commit('SET_APIDATA', JSON.stringify(data).toString().replace(/\\/g,''))
         this.$store.commit('SET_APIDATA', data.json_byNumber.replace(/\\/g, ''))
-        console.log(data)
+        // console.log(data)
         this.$store.commit('SET_RECORDID', res.data.response.data[0].recordId)
         this.$refs.paymentChild.setFields()
+        this.$store.commit('SET_BUSY', false)
       }
       apiGetPackage()
     },
