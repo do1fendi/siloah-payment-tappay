@@ -97,7 +97,7 @@
 
         <b-col class="text-center pr-0 mt-4">
           <b-button type="submit" variant="warning" class="pl-5 pr-5"
-            >Pay</b-button
+            >Confirm / 確認</b-button
           >
         </b-col>
       </b-form>
