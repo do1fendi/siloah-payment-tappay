@@ -6,6 +6,7 @@
       </b-alert>
       <div class="detail mt-5 text-left w-75">
         <h4 class="mb-4">Detail / 訂單資訊</h4>
+        <hr>
         <p>Order / 訂單編號: {{ GET_ORDERNUMBER }}</p>
         <p>Adult / 成人: {{ JSON.parse(GET_APIDATA).adultNum }}</p>
         <p>Kid / 小孩: {{ JSON.parse(GET_APIDATA).kidNum }}</p>
@@ -27,9 +28,8 @@
           ※此為特殊航次，一旦訂位完成，則為保證住房，若取消須收取消費用100%※
         </p>
       </b-alert>
-      <h3 class="mt-5">
-        Check another Itinerary. at
-        <a href="https://www.taiwanviptravel.com">here</a>
+      <h3 class="mt-5">       
+        <a href="https://www.taiwanviptravel.com"><b-button variant="primary">回首頁看其它商品</b-button></a>
       </h3>
     </div>
   </b-container>
